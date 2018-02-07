@@ -1,0 +1,73 @@
+<dom-module id="ttt-square">
+  <template>
+    <style>
+
+    div {
+      flex: 1 auto;
+      @apply --layout;
+      @apply --layout-wrap;
+      @apply --layout-center-center;
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+
+      font-size: 80px;
+      cursor:pointer;
+      
+    }
+
+    .right {
+      border-right: 1px solid #999;
+    }
+
+    .left {
+      border-left: 1px solid #999;
+    }
+
+    .bottom {
+      border-bottom: 1px solid #999;
+    }
+
+    </style>
+
+   <div id="{{_getId()}}" class$="[[border]]">{{value}}</div>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class TTTSquare extends Polymer.Element {
+      static get is() { return 'ttt-square'; }
+      static get properties() {
+        return {
+          id: {
+            type: String,
+            value: ""
+          },
+          border: {
+            type: String,
+            value: ""
+          },
+          value: {
+            type: String,
+            value: ""
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+      }
+
+      _getId() {
+        return "sq_" + this.id;
+      }
+
+    }
+
+    window.customElements.define(TTTSquare.is, TTTSquare);
+  </script>
+</dom-module>

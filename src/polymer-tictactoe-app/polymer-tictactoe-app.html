@@ -1,0 +1,173 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+<link rel="import" href="ttt-square.html">
+
+<dom-module id="polymer-tictactoe-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #404040;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: var(--app-primary-color);
+          overflow-x: hidden;
+        };
+      }
+      app-drawer app-header {
+        background-color: var(--app-primary-color);
+      }
+      .main-header {
+        border-bottom: 1px solid #ddd;
+        background-color: #fff;
+        color: #444;
+      }
+      .title-toolbar {
+        @apply --layout-center-center;
+        box-sizing: border-box;
+      }
+      .main-title-toolbar {
+        width: 100%;
+      }
+      .title {
+        padding-bottom: 40px;
+        font-size: 60px;
+        font-weight: 800;
+      }
+
+      .main-content {
+        padding-top:5em;
+        @apply --layout;
+        @apply --layout-wrap;
+        @apply --layout-center-center;
+      }
+      .ttt-board {
+        @apply --layout;
+        @apply --layout-wrap;
+        @apply --layout-center-center;
+        box-sizing: border-box;
+        width: 300px;
+      }
+
+      [hidden] {
+        display: none;
+      }
+      @media (max-width: 580px) {
+        /* make title smaller to fit on screen */
+        .title {
+          font-size: 40px;
+          padding-bottom: 16px;
+        }
+      }
+      /* narrow layout */
+      @media (max-width: 808px) {
+        article-detail {
+          max-width: none;
+          margin: 0;
+        }
+      }
+
+    </style>
+
+    <app-drawer-layout drawer-width="288px" responsive-width="1280px" narrow="{{narrow}}">
+
+     <!-- main panel -->
+      <app-header-layout>
+
+        <app-header fixed effects="waterfall" class="main-header" slot="header">
+
+          <!-- top toolbar -->
+          <app-toolbar>
+
+
+          </app-toolbar>
+
+          <!-- bottom toolbar -->
+          <app-toolbar class="title-toolbar main-title-toolbar">
+            <div class="title">Tic Tac Toe</div>
+          </app-toolbar>
+
+        </app-header>
+
+        <div class="main-content">
+
+          <div class="ttt-board">
+            <template is="dom-repeat" items="{{state}}">
+              <ttt-square id="[[index]]" border="[[item.border]]" value="[[item.value]]" on-click="_handleClick"></ttt-square>
+            </template>
+
+          </div>
+
+        </div>
+
+      </app-header-layout>
+    </app-drawer-layout>
+
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PolymerTictactoeApp extends Polymer.Element {
+      static get is() { return 'polymer-tictactoe-app'; }
+      static get properties() {
+        return {
+          state: {
+            type: Array,
+            value: []
+          }
+        };
+      }
+
+      constructor() {
+        super();
+        this._handleClick = this._handleClick.bind(this);
+      }
+
+      ready() {
+        super.ready();
+        this.state.push({value:"", border: "bottom right"});
+        this.state.push({value:"", border: "bottom"});
+        this.state.push({value:"", border: "bottom left"});
+        this.state.push({value:"", border: "bottom right"});
+        this.state.push({value:"", border: "bottom"});
+        this.state.push({value:"", border: "bottom left"});
+        this.state.push({value:"", border: "right"});
+        this.state.push({value:"", border: ""});
+        this.state.push({value:"", border: "left"});
+
+      }
+
+      _updateState(index, value) {
+        this.set(`state.${index}.value`, value);
+      }
+
+      _handleClick(event) {
+        let square = event.target;
+        this._updateState(square.id, 'X');
+
+        // this._AIACtion((square.id*1)+1);
+      }
+
+      _AIACtion(index) {
+        console.log(index);
+        try {
+          this._updateState(index, 'O');
+        }
+        catch(err) {
+          throw "State index out of bounds";
+        }
+
+      }
+
+    }
+
+    window.customElements.define(PolymerTictactoeApp.is, PolymerTictactoeApp);
+  </script>
+</dom-module>

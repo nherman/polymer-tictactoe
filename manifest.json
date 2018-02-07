@@ -1,0 +1,7 @@
+{
+  "name": "polymer-tictactoe",
+  "short_name": "polymer-tictactoe",
+  "description": "Tic Tac Toe needs no description",
+  "start_url": "/",
+  "display": "standalone"
+}

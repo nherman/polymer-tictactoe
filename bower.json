@@ -1,0 +1,13 @@
+{
+  "name": "polymer-tictactoe",
+  "description": "Tic Tac Toe needs no description",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "app-layout": "^2.0.4"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  }
+}
