@@ -95,7 +95,7 @@
 
           <div class="ttt-board">
             <template is="dom-repeat" items="{{state}}">
-              <ttt-square id="[[index]]" border="[[item.border]]" value="[[item.value]]" on-click="_handleClick"></ttt-square>
+              <ttt-square id="[[index]]" border="[[item.border]]" value="[[item.value]]" on-click="handleClick"></ttt-square>
             </template>
 
           </div>
@@ -125,9 +125,17 @@
         };
       }
 
+      static get observers() {
+        return [
+            'stateObserver(state.*)'
+        ]
+      }
+
       constructor() {
         super();
-        this._handleClick = this._handleClick.bind(this);
+        this.token_player = "X";
+        this.token_ai = "O";
+        this.handleClick = this.handleClick.bind(this);
       }
 
       ready() {
@@ -144,27 +152,45 @@
 
       }
 
-      _updateState(index, value) {
-        this.set(`state.${index}.value`, value);
-      }
-
-      _handleClick(event) {
+      handleClick(event) {
         let square = event.target;
-        this._updateState(square.id, 'X');
+        this._updateState(square.id, this.token_player);
 
         // this._AIACtion((square.id*1)+1);
       }
 
-      _AIACtion(index) {
-        console.log(index);
-        try {
-          this._updateState(index, 'O');
-        }
-        catch(err) {
-          throw "State index out of bounds";
-        }
+      winner() {
+        return undefined;
+      }
+
+      stateObserver(changeRecord) {
+        //Ignore changes that aren't to 'value' property
+        if (!changeRecord.path.match(/value/)) return;
+
+
+        //TODO - implment ths guy's code
+        //https://github.com/ahmadabdolsaheb/minimaxarticle/blob/master/index.js
+
 
       }
+
+      _updateState(index, value) {
+        if (this.get(`state.${index}.value !== "")) {
+          this.set(`state.${index}.value`, value);
+        }
+      }
+
+
+      // _AIACtion(index) {
+      //   console.log(index);
+      //   try {
+      //     this._updateState(index, 'O');
+      //   }
+      //   catch(err) {
+      //     throw "State index out of bounds";
+      //   }
+
+      // }
 
     }
 
