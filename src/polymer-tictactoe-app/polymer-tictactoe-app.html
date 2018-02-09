@@ -76,7 +76,7 @@
      <!-- main panel -->
       <app-header-layout>
 
-        <app-header fixed effects="waterfall" class="main-header" slot="header">
+        <app-header fixed class="main-header" slot="header">
 
           <!-- top toolbar -->
           <app-toolbar>
@@ -109,6 +109,7 @@
 
   </template>
 
+  <script src="../../bower_components/minmaxtictactoe/index.js"></script>
   <script>
     /**
      * @customElement
@@ -152,45 +153,48 @@
 
       }
 
+      stateObserver(changeRecord) {
+        //TODO: check winner status
+        //TODO: display strike-through on win
+        //TODO: end game on win
+        let board = this._generateMinmaxBoard();
+        if (minmax.winning(board, this.token_player)) {
+
+        } else if (minmax.winning(board, this.token_ai)) {
+
+        } else {
+
+        }
+      }
+
       handleClick(event) {
         let square = event.target;
         this._updateState(square.id, this.token_player);
 
-        // this._AIACtion((square.id*1)+1);
-      }
-
-      winner() {
-        return undefined;
-      }
-
-      stateObserver(changeRecord) {
-        //Ignore changes that aren't to 'value' property
-        if (!changeRecord.path.match(/value/)) return;
-
-
-        //TODO - implment ths guy's code
-        //https://github.com/ahmadabdolsaheb/minimaxarticle/blob/master/index.js
-
-
+        this._AIACtion();
       }
 
       _updateState(index, value) {
-        if (this.get(`state.${index}.value !== "")) {
+        if (this.get(`state.${index}.value`) === "") {
           this.set(`state.${index}.value`, value);
         }
       }
 
+      _AIACtion(index) {
+        let board = this._generateMinmaxBoard();
+        let move = minmax.getMove(board, this.token_ai, this.token_player);
 
-      // _AIACtion(index) {
-      //   console.log(index);
-      //   try {
-      //     this._updateState(index, 'O');
-      //   }
-      //   catch(err) {
-      //     throw "State index out of bounds";
-      //   }
+        this._updateState(move.index, this.token_ai);
+      }
 
-      // }
+      _generateMinmaxBoard() {
+        var board = [];
+        this.state.map((sq,i) => {
+          board[i] = sq.value !== "" ? sq.value : i;
+        });
+
+        return board;
+      }
 
     }
 
