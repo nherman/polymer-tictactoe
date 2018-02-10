@@ -5,7 +5,9 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "app-layout": "^2.0.4",
-    "minmaxtictactoe": "https://github.com/nherman/minimaxtictactoe.git"
+    "minmaxtictactoe": "https://github.com/nherman/minimaxtictactoe.git",
+    "paper-button": "^2.0.0",
+    "paper-styles": "^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
