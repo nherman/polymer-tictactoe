@@ -105,7 +105,7 @@
         <div class="main-content main-content-padding">
           <div class="ttt-board">
             <template is="dom-repeat" items="{{state}}">
-              <ttt-square id="[[index]]" border="[[item.border]]" value="[[item.value]]" on-click="handleClick"></ttt-square>
+              <ttt-square id="[[index]]" border="[[item.border]]" value="[[item.value]]" winner="[[item.winner]]" on-click="handleClick"></ttt-square>
             </template>
           </div>
         </div>
@@ -154,11 +154,35 @@
         ]
       }
 
+      //check for end-game state
+      stateObserver() {
+          let board = this._generateMinmaxBoard();
+          let avail = board.filter(s => s != this.token_player && s != this.token_ai)
+          let winning_combo = [];
+
+          if (minmax.winning(board, this.token_ai)) {
+            this.message = "Ha! I never lose."
+            winning_combo = minmax.winning_combo(board, this.token_ai)
+          } else if (minmax.winning(board, this.token_player)) {
+            this.message = "Huh? There must be a bug."
+            winning_combo = minmax.winning_combo(board, this.token_player)
+          } else if (avail.length === 0) {
+            this.message = "Another tie!"
+          }
+
+          if (winning_combo.length > 0 || avail.length === 0) {
+            this.gameOver = true;
+
+            winning_combo.map((v,i) => {
+              this.set(`state.${v}.winner`, true);
+            });
+          }
+      }
+
       constructor() {
         super();
         this.token_player = "X";
         this.token_ai = "O";
-        this.handleClick = this.handleClick.bind(this);
       }
 
       ready() {
@@ -166,39 +190,18 @@
         this.resetGame();
       }
 
-      stateObserver(changeRecord) {
-        let board = this._generateMinmaxBoard();
-        let avail = board.filter(s => s != this.token_player && s != this.token_ai)
-        let winning_combo = [];
-
-        if (minmax.winning(board, this.token_ai)) {
-          this.message = "Ha! I never lose."
-          winning_combo = minmax.winning_combo(board, this.token_ai)
-        } else if (minmax.winning(board, this.token_player)) {
-          this.message = "Huh? There must be a bug."
-          winning_combo = minmax.winning_combo(board, this.token_player)
-        } else if (avail.length === 0) {
-          this.message = "Another tie!"
-        }
-
-        if (winning_combo.length > 0 || avail.length === 0) {
-          this.gameOver = true;
-          //TODO: display strike-through on win
-        }
-
-      }
-
+      //initialize / reset game to start state
       resetGame(event) {
         this.state=[];
         this.state.push({value:"", border: "bottom right"});
-        this.state.push({value:"", border: "bottom"});
+        this.state.push({value:"", border: "bottom left right"});
         this.state.push({value:"", border: "bottom left"});
-        this.state.push({value:"", border: "bottom right"});
-        this.state.push({value:"", border: "bottom"});
-        this.state.push({value:"", border: "bottom left"});
-        this.state.push({value:"", border: "right"});
-        this.state.push({value:"", border: ""});
-        this.state.push({value:"", border: "left"});
+        this.state.push({value:"", border: "top bottom right"});
+        this.state.push({value:"", border: "top bottom left right"});
+        this.state.push({value:"", border: "top bottom left"});
+        this.state.push({value:"", border: "top right"});
+        this.state.push({value:"", border: "top left right"});
+        this.state.push({value:"", border: "top left"});
         this.gameOver = false;
 
         if (Math.floor(Math.random() * 2)) {
@@ -209,21 +212,19 @@
         }
       }
 
+      //handle human player move
       handleClick(event) {
         if (this.gameOver) return;
 
         let square = event.target;
-        this._updateState(square.id, this.token_player);
 
-        this._AIACtion();
+        //prevent user from clicking on an in-use square
+        if(this._updateState(square.id, this.token_player)) {
+          this._AIACtion();
+        };
       }
 
-      _updateState(index, value) {
-        if (this.get(`state.${index}.value`) === "") {
-          this.set(`state.${index}.value`, value);
-        }
-      }
-
+      //handle AI move
       _AIACtion() {
         let board = this._generateMinmaxBoard();
         let move = minmax.getMove(board, this.token_ai, this.token_player);
@@ -231,6 +232,17 @@
         this._updateState(move.index, this.token_ai);
       }
 
+      // update the state with any move
+      _updateState(index, value) {
+        if (this.get(`state.${index}.value`) === "") {
+          this.set(`state.${index}.value`, value);
+          return true;
+        }
+        //alert caller that square not updated
+        return false;
+      }
+
+      // generate an array in the format required for minmax: [0, 1, "O", "X", "O", "X", 6, 7, 8]
       _generateMinmaxBoard() {
         var board = [];
         this.state.map((sq,i) => {

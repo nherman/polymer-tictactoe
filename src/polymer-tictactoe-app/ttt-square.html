@@ -28,13 +28,17 @@
       border-bottom: 1px solid #999;
     }
 
+    .top {
+      border-top: 1px solid #999;
+    }
+
     .winner {
       border:1px solid #aa3333;
     }
 
     </style>
 
-   <div id="[[_getId()]]" class$="[[border]]">{{value}}</div>
+   <div id="[[_getId()]]" class$="[[_class]]">{{value}}</div>
 
   </template>
 
@@ -58,12 +62,30 @@
           value: {
             type: String,
             value: ""
+          },
+          winner: {
+            type: Boolean,
+            value: false
+          },
+          _class: {
+            type: String,
+            value: this.border
           }
         };
       }
 
-      ready() {
-        super.ready();
+      static get observers() {
+        return [
+            'winnerObserver(winner)'
+        ]
+      }
+
+      winnerObserver(changeRecord) {
+          if (this.winner) {
+            this._class = "winner";
+          } else {
+            this._class = this.border;
+          }
       }
 
       _getId() {
